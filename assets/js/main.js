@@ -1,25 +1,43 @@
 var Game = Game || {};
-Game.width = 840;
-Game.height = 480;
+Game.width = 1040;
+Game.height = 680;
 
 Game.init = function(){
 
 	Game.stage = new PIXI.Container();
 	Game.renderer = PIXI.autoDetectRenderer(Game.width, Game.height);
-	// document.body.appendChild(Game.renderer.view);
-	// Game.preload();
+	document.body.appendChild(Game.renderer.view);
+	Game.preload();
 }
 
 Game.preload = function(){
 
 	PIXI.loader
+		.add("assets/graphics/tiles.png")
 		.load(Game.create);
 }
 
 Game.create = function(){
 	
+	//Create the `tileset` sprite from the texture
+	 var texture = PIXI.utils.TextureCache["assets/graphics/tiles.png"];
 
-	Game.stage.addChild( Game.mapContainer);
+	 //Create a rectangle object that defines the position and
+	 //size of the sub-image you want to extract from the texture
+
+	 //Tell the texture to use that rectangular section
+	 texture.frame = new PIXI.Rectangle(256, 0, 32, 32);
+
+	 //Create the sprite from the texture
+	var grass = new PIXI.Sprite(texture);
+
+	 //Position the rocket sprite on the canvas
+	 grass.x = 32;
+	 grass.y = 32;
+
+	//Add the rocket to the stage
+	Game.stage.addChild(grass);
+	//Game.stage.addChild( Game.mapContainer);
 
 
 	//Render the stage   
