@@ -33,15 +33,17 @@ Game.create = function(){
 
 	 //Position the rocket sprite on the canvas
 	 grass.x = 32;
-	 grass.y = 32;
+	 grass.y = 400;
 
 	//Add the rocket to the stage
 	Game.stage.addChild(grass);
+
+	grass.x = 300;
+	grass.y = 300;
 	//Game.stage.addChild( Game.mapContainer);
 
 
-	//Render the stage   
-	Game.renderer.render(Game.stage);
+
 
 	Game.update();
 
