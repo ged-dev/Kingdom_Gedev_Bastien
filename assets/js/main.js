@@ -10,21 +10,20 @@ function Trunk(pos) {
     this.envSprite = undefined;
     this.position = pos;
 
-    this.setOver = function (over)
-    {
-        this.over = over;
-    };
+    
 }
 
 
 // ---------------------------------------------------------------
 
 var Game = Game || {};
-Game.width = 1040;
-Game.height = 680;
+Game.width = 1440;
+Game.height = 780;
 
 var Materials = {};
 var level = [];
+var groundLevel = 500;
+
 
 
 
@@ -42,7 +41,9 @@ function presetMaterial(key, cacheKey, tileSize, index) {
 Game.init = function () {
 
     Game.stage = new PIXI.Container();
-    Game.stage.scale.x = Game.stage.scale.y = 0.5;
+    // Game.stage.scale.x = 
+    Game.stage.scale.y = 1;
+    Game.stage.scale.x = 1;
     Game.renderer = PIXI.autoDetectRenderer(Game.width, Game.height);
     document.body.appendChild(Game.renderer.view);
     
@@ -50,9 +51,18 @@ Game.init = function () {
     {
         this.envSprite = new PIXI.Sprite(Materials[environment]);
         this.envSprite.x = this.position*32;
-        this.envSprite.y = 200;
+        this.envSprite.y = groundLevel;
         Game.stage.addChild(this.envSprite);
         this.environment = environment;
+    };
+
+    Trunk.prototype.setOver = function (over, spriteHeight)
+    {
+    	this.envSprite = new PIXI.Sprite(Materials[over]);
+        this.envSprite.x = this.position*32;
+        this.envSprite.y = groundLevel - spriteHeight;
+        Game.stage.addChild(this.envSprite);
+        this.over = over;
     };
     
     Game.preload();
@@ -84,9 +94,12 @@ Game.create = function () {
     presetMaterial("grass", "assets/graphics/tiles.png", new Vector(32), new Vector(8, 0));
     presetMaterial("stone", "assets/graphics/tiles.png", new Vector(32), new Vector(12, 0));
     presetMaterial("pontoon", "assets/graphics/tiles.png", new Vector(32), new Vector(5, 0));
+    presetMaterial("castle", "assets/graphics/castle.png", new Vector(128, 96), new Vector(14, 0));
+    presetMaterial("king", "assets/graphics/king.png", new Vector(700, 64), new Vector(0, 0));
+
     console.log(Materials);
     // on crée le tableau et on le rempli de Trunk vides
-    level = new Array(60);
+    level = new Array(90);
     for (var i = 0; i < level.length; i++)
     {
         level[i] = new Trunk(i);
@@ -97,28 +110,31 @@ Game.create = function () {
         for (var i = start; i < end; i++)
         {
             level[i].setEnv(env);
+            console.log("position", start);
         }
     }
 
     // création ponton
-    let start = 0, end = level.length, random = Math.random() * 2;
+    let start = 0, end = level.length, random = Math.random() * 2, posCastle = 0;
 
     if (Math.floor(random)) // 2 pontons
     {
-
         levelEdit(0, 8, "pontoon");
         start += 8;
         levelEdit(end - 8, end, "pontoon");
         end -= 8;
-    } else if (random > 0.5)// 1 ponton à droite
+    } else if (random > 0.5) // 1 ponton à droite
     {
         levelEdit(end - 8, end, "pontoon");
         end -= 8;
-    } else // 1 ponton à gauche
+    } else if (random <= 0.5) // 1 ponton à gauche
     {
         levelEdit(0, 8, "pontoon");
         start += 8;
-    }
+    } else
+    
+    
+    
     console.log(end);
     // copie des index du level
     let indexes = new Array(end - start);
@@ -128,19 +144,18 @@ Game.create = function () {
     }
 
 
-
-
-
-
-
     //levelEdit(start, end, new Trunk("meadow"));
 
 
-
-    console.log(level);
+    console.log("level : ", level);
     console.log(indexes);
+    console.log(indexes.length);
 
-
+    posCastle = indexes.length/2;
+    console.log("posCastle : ", posCastle);
+    levelEdit(start, end, "grass");
+    level[posCastle].setOver("castle", 96);
+    level[10].setOver("king", 61);
 
 
 
@@ -152,6 +167,8 @@ Game.create = function () {
 Game.update = function () {
 
     Game.renderer.render(Game.stage);
+
+
 }
 
 Game.init();
